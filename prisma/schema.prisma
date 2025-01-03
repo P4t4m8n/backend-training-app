@@ -16,22 +16,27 @@ enum DaysOfWeek {
   FRIDAY
   SATURDAY
   SUNDAY
+}
 
-  @@map("DAYS_OF_WEEK")
+enum AuthStatus {
+  PENDING
+  SENT
+  CONFIRMED
 }
 
 model User {
-  id               String    @id @default(uuid())
-  firstName        String    @default("")
-  lastName         String    @default("")
-  email            String    @unique
-  phone            String    @unique
-  trustedDeviceId  String    @unique
-  phoneDeviceToken String    @unique
-  isTrainer        Boolean   @default(false)
-  trainer          Trainer?
-  createdAt        DateTime  @default(now())
-  programs         Program[]
+  id           String    @id @default(uuid())
+  firstName    String    @default("")
+  lastName     String    @default("")
+  email        String    @unique
+  phone        String?
+  googleId     String?
+  passwordHash String?
+  imgUrl       String?
+  isTrainer    Boolean   @default(false)
+  trainer      Trainer?
+  createdAt    DateTime  @default(now())
+  programs     Program[]
 }
 
 model Trainer {
