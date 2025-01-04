@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
-import http from "http";
+import { setupAsyncLocalStorage } from "../middlewares/localStorge.middleware";
 import cookieParser from "cookie-parser";
+import http from "http";
 import cors from "cors";
 import path from "path";
 
@@ -12,6 +13,8 @@ const server = http.createServer(app);
 app.use(express.json());
 //TODO?? build cookie parser and signed cookies, using library for now
 app.use(cookieParser(process.env.COOKIE_SECRET));
+//Local storage for easy access to user data in the back
+app.use(setupAsyncLocalStorage);
 
 //CORS
 if (process.env.NODE_ENV === "production") {
@@ -29,11 +32,14 @@ if (process.env.NODE_ENV === "production") {
 import { authRoutes } from "./api/auth/auth.routes";
 app.use("/api/auth", authRoutes);
 
-import { userRoutes } from "./api/users/user.routes";
-app.use("/api/users", userRoutes);
+import { userRoutes } from "./api/user/user.routes";
+app.use("/api/user", userRoutes);
 
 import { trainingRoutes } from "./api/training/training.routes";
 app.use("/api/training", trainingRoutes);
+
+import { exerciseRoutes } from "./api/exercise/exercise.routes";
+app.use("/api/exercise", exerciseRoutes);
 
 // Catch-all route
 app.get("/**", (req: Request, res: Response) => {

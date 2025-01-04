@@ -1,0 +1,18 @@
+4.1.2025, 20:24:58 - WARN - Operational Error: PrismaClientValidationError: 
+Invalid `prisma.user.update()` invocation in
+C:\Users\micha\Desktop\projects\training-app\backend\src\api\users\user.service.ts:46:36
+
+  43   userDto: Prisma.UserUpdateInput
+  44 ): Promise<TUser> {
+  45   try {
+→ 46     const user = await prisma.user.update({
+           where: {
+             id: "b6f09880-ab51-482f-ae16-3ad81eb37a61"
+           },
+           data: {
+             uniquePhoneId: 99999
+                            ~~~~~
+           }
+         })
+
+Argument `uniquePhoneId`: Invalid value provided. Expected String, NullableStringFieldUpdateOperationsInput or Null, provided Int. | {"statusCode":500,"stack":"AppError: PrismaClientValidationError: \nInvalid `prisma.user.update()` invocation in\nC:\\Users\\micha\\Desktop\\projects\\training-app\\backend\\src\\api\\users\\user.service.ts:46:36\n\n  43   userDto: Prisma.UserUpdateInput\n  44 ): Promise<TUser> {\n  45   try {\n→ 46     const user = await prisma.user.update({\n           where: {\n             id: \"b6f09880-ab51-482f-ae16-3ad81eb37a61\"\n           },\n           data: {\n             uniquePhoneId: 99999\n                            ~~~~~\n           }\n         })\n\nArgument `uniquePhoneId`: Invalid value provided. Expected String, NullableStringFieldUpdateOperationsInput or Null, provided Int.\n    at Function.create (C:\\Users\\micha\\Desktop\\projects\\training-app\\backend\\src\\services\\Error.service.ts:58:12)\n    at C:\\Users\\micha\\Desktop\\projects\\training-app\\backend\\src\\api\\users\\user.controller.ts:36:14\n    at Generator.throw (<anonymous>)\n    at rejected (C:\\Users\\micha\\Desktop\\projects\\training-app\\backend\\src\\api\\users\\user.controller.ts:6:65)"}

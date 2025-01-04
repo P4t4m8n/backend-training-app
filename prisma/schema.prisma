@@ -25,18 +25,17 @@ enum AuthStatus {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  firstName    String    @default("")
-  lastName     String    @default("")
-  email        String    @unique
-  phone        String?
-  googleId     String?
-  passwordHash String?
-  imgUrl       String?
-  isTrainer    Boolean   @default(false)
-  trainer      Trainer?
-  createdAt    DateTime  @default(now())
-  programs     Program[]
+  id            String    @id @default(uuid())
+  firstName     String    @default("")
+  lastName      String    @default("")
+  email         String    @unique
+  phone         String?
+  uniquePhoneId String?   @unique
+  imgUrl        String?
+  isTrainer     Boolean   @default(false)
+  trainer       Trainer?
+  createdAt     DateTime  @default(now())
+  programs      Program[]
 }
 
 model Trainer {
@@ -46,38 +45,39 @@ model Trainer {
 }
 
 model Exercise {
-  id                String              @id @default(uuid())
+  id                String     @id @default(uuid())
   name              String
-  programToExercise ProgramToExercise[]
+  training Training[]
 }
 
 model Program {
-  id               String              @id @default(uuid())
-  days             DaysOfWeek[]
-  startDate        DateTime
-  endDate          DateTime
-  programExercises ProgramToExercise[]
-  userId           String
-  user             User                @relation(fields: [userId], references: [id])
+  id        String       @id @default(uuid())
+  days      DaysOfWeek[]
+  startDate DateTime
+  endDate   DateTime
+  trainings Training[]
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
 }
 
-model ProgramToExercise {
-  id         String   @id @default(uuid())
-  videoUrl   String
-  exerciseId String
-  set        Int      @default(1)
-  goalSets   Int      @default(1)
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
-  sets       Sets[]
-  programId  String
-  Program    Program  @relation(fields: [programId], references: [id])
+model Training {
+  id            String   @id @default(uuid())
+  videosURL     String[] @default([])
+  userVideosURL String[] @default([])
+  exerciseId    String
+  set           Int      @default(1)
+  goalSet       Int      @default(1)
+  exercise      Exercise @relation(fields: [exerciseId], references: [id])
+  sets          Sets[]
+  programId     String
+  program       Program  @relation(fields: [programId], references: [id])
 }
 
 model Sets {
-  id                  String            @id @default(uuid())
-  reps                Int
-  goalReps            Int
-  weight              Int
-  programToExercise   ProgramToExercise @relation(fields: [programToExerciseId], references: [id])
-  programToExerciseId String
+  id         String   @id @default(uuid())
+  reps       Int
+  goalReps   Int
+  weight     Int
+  training   Training @relation(fields: [trainingId], references: [id])
+  trainingId String
 }
