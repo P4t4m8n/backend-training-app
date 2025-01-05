@@ -122,3 +122,11 @@ async function remove(id: string): Promise<void> {
     },
   });
 }
+
+export const trainingService = {
+  get,
+  getById,
+  create,
+  save,
+  remove,
+};
