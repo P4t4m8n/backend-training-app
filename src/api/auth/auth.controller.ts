@@ -68,7 +68,6 @@ export async function googleCallback(req: Request, res: Response) {
       firstName: userInfo.given_name,
       lastName: userInfo.family_name,
       imgUrl: userInfo.picture,
-      googleId: userInfo.id,
       phone: "",
     };
     let token = null;

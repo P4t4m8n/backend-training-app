@@ -7,6 +7,7 @@ export type TUser = TEntity & {
   phone?: string | null;
   imgUrl?: string | null;
   isTrainer?: boolean;
+  uniquePhoneId?: string | null;
 };
 
 export type TUserFull = TUser & {

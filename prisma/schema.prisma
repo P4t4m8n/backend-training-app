@@ -30,7 +30,7 @@ model User {
   lastName      String    @default("")
   email         String    @unique
   phone         String?
-  uniquePhoneId String?   @unique
+  uniquePhoneId String?   @unique 
   imgUrl        String?
   isTrainer     Boolean   @default(false)
   trainer       Trainer?

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { userService } from "./user.service";
 import { AppError } from "../../services/Error.service";
+import { TUser } from "../../types/user.type";
 
 export async function createUser(req: Request, res: Response) {
   try {

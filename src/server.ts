@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import http from "http";
 import cors from "cors";
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 //Option for adding sockets later, remove before deployment if not implemented
@@ -17,15 +20,15 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(setupAsyncLocalStorage);
 
 //CORS
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.resolve("public")));
-} else {
-  const corsOptions: cors.CorsOptions = {
-    origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
-    credentials: true,
-  };
-  app.use(cors(corsOptions));
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.resolve("public")));
+// } else {
+//   const corsOptions: cors.CorsOptions = {
+//     origin: ["http://127.0.0.1:5173", "http://localhost:5173","10.0.0.3:8081"],
+//     credentials: true,
+//   };
+//   app.use(cors(corsOptions));
+// }
 
 //Routes
 
@@ -40,6 +43,9 @@ app.use("/api/training", trainingRoutes);
 
 import { exerciseRoutes } from "./api/exercise/exercise.routes";
 app.use("/api/exercise", exerciseRoutes);
+
+import { videoRoutes } from "./api/video/video.routes";
+app.use("/api/video", videoRoutes);
 
 // Catch-all route
 app.get("/**", (req: Request, res: Response) => {

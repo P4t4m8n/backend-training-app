@@ -11,6 +11,8 @@ const USER_SMALL_SELECT = {
     phone: true,
     imgUrl: true,
     isTrainer: true,
+    email: true,
+    uniquePhoneId: true,
   },
 };
 

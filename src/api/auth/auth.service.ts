@@ -4,76 +4,10 @@ import { AppError } from "../../services/Error.service";
 import bcrypt from "bcrypt";
 import { jwtVerify, SignJWT } from "jose";
 import { TUser } from "../../types/user.type";
+import crypto, { createCipheriv, createDecipheriv } from "crypto";
+import dotenv from "dotenv";
 
-async function signIn(userDto: TUser): Promise<{ user: TUser; token: string }> {
-  try {
-    const user = (await prisma.user.findUnique({
-      where: { email: userDto.email },
-    })) as TUser;
-
-    if (!user || !user?.email || !user?.id) {
-      throw AppError.create("User not found", 404, true);
-    }
-
-    if (user.passwordHash && userDto.password) {
-      const match = await bcrypt.compare(userDto.password, user.passwordHash);
-      if (!match) {
-        throw AppError.create("Invalid credentials", 401, true);
-      }
-    } else if (
-      user?.googleId &&
-      userDto?.googleId &&
-      user.googleId !== userDto.googleId
-    ) {
-      throw AppError.create("Invalid credentials", 401, true);
-    } else {
-      throw AppError.create("Invalid credentials", 401, true);
-    }
-
-    return handleReturnStruct(user);
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function signUp(userDto: TUser): Promise<{ user: TUser; token: string }> {
-  try {
-    const saltRounds = 10;
-    if (!userDto?.email) {
-      throw AppError.create("Email is required", 400, true);
-    }
-    const existingUser = await prisma.user.findUnique({
-      where: { email: userDto.email },
-    });
-
-    if (existingUser) {
-      throw AppError.create("User already exists", 409, true);
-    }
-
-    let hash = null;
-    let _googleId = null;
-    if (userDto.password) {
-      hash = await bcrypt.hash(userDto.password, saltRounds);
-    } else if (userDto.googleId) {
-      _googleId = userDto.googleId;
-    }
-
-    const userToSave: Prisma.UserCreateInput = {
-      ...userDto,
-      passwordHash: hash,
-      googleId: _googleId,
-      email: userDto.email,
-    };
-    const user = (await prisma.user.create({
-      data: { ...userToSave },
-    })) as TUser;
-
-    return handleReturnStruct(user);
-  } catch (error) {
-    throw error;
-  }
-}
-
+dotenv.config();
 const createJWT = async (userId: string) => {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
   return new SignJWT({ userId })
@@ -84,13 +18,34 @@ const createJWT = async (userId: string) => {
 
 const handleReturnStruct = async (user: TUser) => {
   const token = await createJWT(user.id!);
-  delete user?.passwordHash;
-  delete user?.password;
-  delete user?.googleId;
 
   return { user, token };
 };
-export const authService = {
-  signIn,
-  signUp,
+
+const generateUniqueId = () => {
+  return crypto.randomBytes(32).toString("hex");
 };
+console.log("process.env.ENCRYPTION_KEY:", process.env.ENCRYPTION_KEY)
+const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex");
+const IV_LENGTH = 16;
+
+export const encryptToken = (token: string) => {
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = createCipheriv("aes-256-cbc", ENCRYPTION_KEY, iv);
+  let encrypted = cipher.update(token, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return iv.toString("hex") + ":" + encrypted;
+};
+
+const decryptToken = (encryptedToken: string) => {
+  const [iv, encrypted] = encryptedToken.split(":");
+  const decipher = createDecipheriv(
+    "aes-256-cbc",
+    ENCRYPTION_KEY,
+    Buffer.from(iv, "hex")
+  );
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+};
+export const authService = {};
