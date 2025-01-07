@@ -1,9 +1,9 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.elasticemail.com", // Elastic Email's SMTP server
-  port: 587, // TLS port
-  secure: false, // Use TLS
+  host: "smtp.elasticemail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: "michaelieran@gmail.com",
     pass: process.env.ELASTIC_EMAIL_API_KEY,
@@ -30,7 +30,6 @@ export async function sendEmail(
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.messageId);
   } catch (error) {
     console.error("Error sending email:", error);
   }

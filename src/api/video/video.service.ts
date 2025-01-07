@@ -1,8 +1,6 @@
 export async function create(uri: string) {
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET!;
-  console.log("uploadPreset:", uploadPreset);
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME!;
-  console.log("cloudName:", cloudName);
   const data = new FormData();
   data.append("file", {
     uri,
@@ -23,7 +21,6 @@ export async function create(uri: string) {
     );
 
     const result = await response.json();
-    console.log("Uploaded video URL:", result.secure_url);
 
     // Save the `result.secure_url` to your database if needed
     return result.secure_url;

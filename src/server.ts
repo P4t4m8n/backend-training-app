@@ -20,15 +20,15 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(setupAsyncLocalStorage);
 
 //CORS
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static(path.resolve("public")));
-// } else {
-//   const corsOptions: cors.CorsOptions = {
-//     origin: ["http://127.0.0.1:5173", "http://localhost:5173","10.0.0.3:8081"],
-//     credentials: true,
-//   };
-//   app.use(cors(corsOptions));
-// }
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.resolve("public")));
+} else {
+  const corsOptions: cors.CorsOptions = {
+    origin: ["http://127.0.0.1:5173", "http://localhost:5173","10.0.0.3:8081"],
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
+}
 
 //Routes
 
@@ -54,5 +54,5 @@ app.get("/**", (req: Request, res: Response) => {
 const port = process.env.PORT || 3030;
 
 server.listen(port, () =>
-  console.log(`Server ready at: http://localhost:${port}`)
+  console.info(`Server ready at: http://localhost:${port}`)
 );

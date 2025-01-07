@@ -5,7 +5,6 @@ import { AppError } from "../../services/Error.service";
 export async function uploadVideo(req: Request, res: Response) {
   try {
     const uri = req.body;
-    console.log("uri:", uri);
 
     const video = await videoService.create(uri);
     res.status(201).json(video);

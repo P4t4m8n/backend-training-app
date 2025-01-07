@@ -3,16 +3,23 @@ import { Request, Response } from "express";
 import { userService } from "./user.service";
 import { AppError } from "../../services/Error.service";
 import { TUser } from "../../types/user.type";
+import { userUtil } from "./user.util";
+import { validateUserRequiredFields } from "./user.validation";
+import { sanitizeUserDto } from "./user.sanitization";
 
 export async function createUser(req: Request, res: Response) {
   try {
-    //TODO add sanitization, validation, user duplication check
-    const userData = req.body;
-    console.log("userData:", userData);
+    let data = req.body;
 
+    const requiredError = validateUserRequiredFields(data);
+    if (requiredError.length > 0) {
+      throw AppError.create(requiredError.join(", "), 422);
+    }
+
+    const userData = sanitizeUserDto(data);
     const user = await userService.create(userData);
-    //TODO add error handling
-    res.status(201).json(user);
+    // TODO add error handling
+    res.status(201);
   } catch (error) {
     //TODO add error handling
     const err = AppError.create(error as string);

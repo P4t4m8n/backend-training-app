@@ -4,94 +4,70 @@ import { TUser } from "../../types/user.type";
 import { authService } from "./auth.service";
 import { AppError } from "../../services/Error.service";
 import path from "path";
+import { validateUserRequiredFields } from "../user/user.validation";
+import { sanitizeUserDto } from "../user/user.sanitization";
+import { userService } from "../user/user.service";
+import { tokenService } from "./token.service";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 
-export async function signUp(req: Request, res: Response) {}
+export async function signUp(req: Request, res: Response) {
+  try {
+    let data = req.body;
+
+    const requiredError = validateUserRequiredFields(data);
+    if (requiredError.length > 0) {
+      throw AppError.create(requiredError.join(", "), 422);
+    }
+
+    const userData = sanitizeUserDto(data);
+    const user = await userService.create(userData);
+    if (!user || !user?.id) {
+      throw AppError.create("User not created", 500);
+    }
+
+    const url = await authService.createMagicLink(user?.id);
+
+    res.status(201).json({ url });
+  } catch (error) {
+    const err = AppError.create(`Error signing up: ${error}`, 500, true);
+    res.status(err.statusCode).json(err);
+  }
+}
 export async function signIn(req: Request, res: Response) {}
 
-export async function googleRedirect(req: Request, res: Response) {
-  const googleAuthURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email%20profile`;
-  res.redirect(googleAuthURL);
-}
-
-export async function googleCallback(req: Request, res: Response) {
+export async function registry(req: Request, res: Response) {
   try {
-    const url = new URL(req?.url);
-    const code = url.searchParams.get("code");
-    if (!code) {
-      throw new Error("No code provided");
+    const { token } = req.query;
+
+    const userId = await tokenService.verify(token as string);
+    if (!userId) {
+      throw AppError.create("Invalid token", 400);
     }
+    const uniqueId = await authService.createUniqueId(userId);
+    console.log("uniqueId:", uniqueId);
 
-    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: GOOGLE_REDIRECT_URI,
-        grant_type: "authorization_code",
-      }).toString(),
-    });
-
-    if (!tokenResponse.ok) {
-      throw new Error("Failed to get token");
-    }
-
-    const tokenData = await tokenResponse.json();
-    const accessToken = tokenData.access_token;
-
-    // Fetch user information
-    const userInfoResponse = await fetch(
-      "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    if (!userInfoResponse.ok) {
-      throw new Error("Failed to fetch user information");
-    }
-
-    const userInfo = await userInfoResponse.json();
-
-    const userToSave: TUser = {
-      email: userInfo.email,
-      firstName: userInfo.given_name,
-      lastName: userInfo.family_name,
-      imgUrl: userInfo.picture,
-      phone: "",
-    };
-    let token = null;
-    let user = null;
-    try {
-      const res = await authService.signIn(userToSave);
-      user = res.user;
-      token = res.token;
-    } catch (error) {
-      if (error instanceof AppError && error.statusCode === 404) {
-        // User not found, attempt to sign up
-        const res = await authService.signUp(userToSave);
-        user = res.user;
-      } else {
-        // Other errors
-        throw error;
-      }
-    }
-
-    res.cookie("token", token, COOKIE);
-
-    return res.redirect("/");
+    res.status(201).json({ uniqueId });
   } catch (error) {
     const err = AppError.create(`Error signing out${error}`, 500, true);
+    res.status(err.statusCode).json(err);
+  }
+}
+
+export async function validateUserSession(req: Request, res: Response) {
+  try {
+    const uniquePhoneId = req.params.token;
+
+    const user = await authService.validateUserSession(uniquePhoneId);
+    res.status(200).json(user);
+  } catch (error) {
+    const err = AppError.create(
+      `Error validating user session: ${error}`,
+      500,
+      true
+    );
     res.status(err.statusCode).json(err);
   }
 }

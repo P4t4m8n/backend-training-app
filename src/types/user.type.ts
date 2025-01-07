@@ -3,7 +3,7 @@ import { TEntity } from "./app.type";
 export type TUser = TEntity & {
   firstName?: string;
   lastName?: string;
-  email?: string;
+  email: string;
   phone?: string | null;
   imgUrl?: string | null;
   isTrainer?: boolean;
@@ -19,4 +19,5 @@ export type TUserFilter = {
   email?: string;
   phone?: string;
   isTrainer?: boolean;
+  uniquePhoneId?: string;
 };

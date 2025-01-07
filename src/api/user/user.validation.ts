@@ -9,6 +9,30 @@ import { TUser } from "../../types/user.type";
  * @param userDto - The IUserDto object containing user data to be validated.
  * @returns An array of error messages indicating validation failures, or an empty array if all fields are valid.
  */
+
+export const validateUserRequiredFields = (userDto: TUser) => {
+  const errors: string[] = [];
+
+  const firstName = validationService.validateExistence(
+    userDto?.firstName,
+    "First name"
+  );
+  if (firstName) errors.push(firstName);
+
+  const lastName = validationService.validateExistence(
+    userDto?.lastName,
+    "Last name"
+  );
+  if (lastName) errors.push(lastName);
+
+  const email = validationService.validateExistence(userDto?.email, "Email");
+  if (email) errors.push(email);
+
+  const phone = validationService.validateExistence(userDto?.phone, "Phone");
+  if (phone) errors.push(phone);
+
+  return errors;
+};
 export const validateUserDto = (userDto: TUser) => {
   const errors: string[] = [];
 
@@ -22,7 +46,7 @@ export const validateUserDto = (userDto: TUser) => {
   );
 
   if (firstNameErrorLen) errors.push(firstNameErrorLen);
-  
+
   const firstNameError = validationService.validateLettersAndNumbers(
     "First name",
     userDto?.firstName

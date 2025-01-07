@@ -30,12 +30,22 @@ model User {
   lastName      String    @default("")
   email         String    @unique
   phone         String?
-  uniquePhoneId String?   @unique 
+  uniquePhoneId String?   @unique
   imgUrl        String?
   isTrainer     Boolean   @default(false)
   trainer       Trainer?
   createdAt     DateTime  @default(now())
   programs      Program[]
+  token         Token[]
+}
+
+model Token {
+  id        String     @id @default(uuid())
+  token     String     @unique
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  status    AuthStatus @default(PENDING)
 }
 
 model Trainer {
@@ -45,8 +55,8 @@ model Trainer {
 }
 
 model Exercise {
-  id                String     @id @default(uuid())
-  name              String
+  id       String     @id @default(uuid())
+  name     String
   training Training[]
 }
 
