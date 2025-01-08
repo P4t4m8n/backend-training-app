@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { userService } from "./user.service";
 import { AppError } from "../../services/Error.service";
-import { TUser } from "../../types/user.type";
+import { TUser, TUserFilter } from "../../types/user.type";
 import { userUtil } from "./user.util";
 import { validateUserRequiredFields } from "./user.validation";
 import { sanitizeUserDto } from "./user.sanitization";
@@ -59,8 +59,8 @@ export async function getUserById(req: Request, res: Response) {
 
 export async function getUsers(req: Request, res: Response) {
   try {
-    const filter = req.query;
-    const users = await userService.get(filter);
+    const query = req.query;
+    const users = await userService.get(query as unknown as TUserFilter);
 
     res.status(200).json(users);
   } catch (error) {

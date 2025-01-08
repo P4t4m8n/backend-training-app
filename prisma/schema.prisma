@@ -63,6 +63,7 @@ model Exercise {
 model Program {
   id        String       @id @default(uuid())
   days      DaysOfWeek[]
+  name      String       @default("Program")
   startDate DateTime
   endDate   DateTime
   trainings Training[]
@@ -88,6 +89,7 @@ model Sets {
   reps       Int
   goalReps   Int
   weight     Int
+  rest       Int
   training   Training @relation(fields: [trainingId], references: [id])
   trainingId String
 }

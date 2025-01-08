@@ -13,7 +13,10 @@ dotenv.config();
 
 async function validateUserSession(token: string) {
   try {
-    const [user] = await userService.get({ uniquePhoneId: token });
+    const [user] = await userService.get({
+      uniquePhoneId: token,
+      isSmall: true,
+    });
     const decodedToken = decryptToken(token);
     const decryptUserToken = decryptToken(user.uniquePhoneId!);
     if (decodedToken !== decryptUserToken) {
