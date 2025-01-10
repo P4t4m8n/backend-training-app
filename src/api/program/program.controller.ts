@@ -24,10 +24,22 @@ export async function getProgramById(req: Request, res: Response) {
   }
 }
 
-export async function saveProgram(req: Request, res: Response) {
+export async function createProgram(req: Request, res: Response) {
   try {
     const programDto = req.body;
-    const program = await programService.save(programDto);
+    console.log("programDto:", programDto)
+    const program = await programService.create(programDto);
+    console.log("program:", program)
+    res.json(program);
+  } catch (error) {
+    const err = AppError.create(error as string, 500);
+    res.status(err.statusCode).json(err);
+  }
+}
+export async function updateProgram(req: Request, res: Response) {
+  try {
+    const programDto = req.body;
+    const program = await programService.update(programDto);
     res.json(program);
   } catch (error) {
     const err = AppError.create(error as string, 500);

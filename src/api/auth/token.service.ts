@@ -45,6 +45,25 @@ async function update(token: TToken): Promise<Token> {
   });
 }
 
+async function invalidateToken(userId: string) {
+  return await prisma.token.updateMany({
+    where: {
+      userId,
+      AND: {
+        OR: [
+          {
+            status: "PENDING",
+          },
+          {
+            status: "SENT",
+          },
+        ],
+      },
+    },
+    data: { status: "CANCELLED" },
+  });
+}
+
 async function verify(token: string): Promise<string> {
   const tokenData = await prisma.token.findUnique({
     where: { token },
@@ -75,10 +94,13 @@ const decodeToken = async (token: string) => {
 
   return payload;
 };
+
 export const tokenService = {
   get,
   getById,
   save,
   create,
   verify,
+  update,
+  invalidateToken,
 };

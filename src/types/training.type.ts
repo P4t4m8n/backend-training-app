@@ -11,6 +11,7 @@ export type TTraining = TEntity & {
 };
 
 export type Sets = TEntity & {
+  rest: number;
   reps: number;
   goalReps: number;
   weight: number;

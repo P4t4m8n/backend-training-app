@@ -36,6 +36,7 @@ export async function signUp(req: Request, res: Response) {
     res.status(err.statusCode).json(err);
   }
 }
+
 export async function signIn(req: Request, res: Response) {}
 
 export async function registry(req: Request, res: Response) {
@@ -47,7 +48,6 @@ export async function registry(req: Request, res: Response) {
       throw AppError.create("Invalid token", 400);
     }
     const uniqueId = await authService.createUniqueId(userId);
-    console.log("uniqueId:", uniqueId);
 
     res.status(201).json({ uniqueId });
   } catch (error) {
@@ -68,6 +68,20 @@ export async function validateUserSession(req: Request, res: Response) {
       500,
       true
     );
+    res.status(err.statusCode).json(err);
+  }
+}
+
+export async function reissueLink(req: Request, res: Response) {
+  try {
+    const { id: userId } = req.body;
+
+    await tokenService.invalidateToken(userId);
+
+    const url = await authService.createMagicLink(userId);
+    res.status(201).json({ url });
+  } catch (error) {
+    const err = AppError.create(`Error reissuing link: ${error}`, 500, true);
     res.status(err.statusCode).json(err);
   }
 }

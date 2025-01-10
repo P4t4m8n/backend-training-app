@@ -1,14 +1,22 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../../../prisma/prisma";
 import { AppError } from "../../services/Error.service";
-import { TProgram, TProgramFilter } from "../../types/program.type";
+import {
+  TProgram,
+  TProgramDto,
+  TProgramFilter,
+} from "../../types/program.type";
 
 async function get(filter: TProgramFilter): Promise<TProgram[]> {
   const programs = prisma.program.findMany({
     where: filter,
     relationLoadStrategy: "join",
     include: {
-      trainings: true,
+      trainings: {
+        include: {
+          sets: true,
+        },
+      },
     },
   });
   return programs;
@@ -20,7 +28,11 @@ async function getById(id: string): Promise<TProgram> {
       id,
     },
     include: {
-      trainings: true,
+      trainings: {
+        include: {
+          sets: true,
+        },
+      },
     },
   });
 
@@ -31,11 +43,33 @@ async function getById(id: string): Promise<TProgram> {
   return program;
 }
 
-async function save(programDto: TProgram): Promise<TProgram> {
-  const program = prisma.program.upsert({
-    where: { id: programDto.id! },
-    update: programDto,
-    create: programDto as Prisma.ProgramCreateInput,
+async function create(data: TProgramDto): Promise<TProgram> {
+  const program = await prisma.program.create({
+    data,
+    include: {
+      trainings: {
+        include: {
+          sets: true,
+        },
+      },
+    },
+  });
+  return program;
+}
+
+async function update(data: TProgramDto) {
+  const program = await prisma.program.update({
+    where: {
+      id: data.id,
+    },
+    data,
+    include: {
+      trainings: {
+        include: {
+          sets: true,
+        },
+      },
+    },
   });
   return program;
 }
@@ -51,6 +85,7 @@ async function remove(id: string): Promise<void> {
 export const programService = {
   get,
   getById,
-  save,
+  create,
+  update,
   remove,
 };

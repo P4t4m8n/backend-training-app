@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve("public")));
 } else {
   const corsOptions: cors.CorsOptions = {
-    origin: ["http://127.0.0.1:5173", "http://localhost:5173","10.0.0.3:8081"],
+    origin: ["http://127.0.0.1:5173", "http://localhost:5173", "10.0.0.3:8081"],
     credentials: true,
   };
   app.use(cors(corsOptions));
@@ -44,8 +44,14 @@ app.use("/api/training", trainingRoutes);
 import { exerciseRoutes } from "./api/exercise/exercise.routes";
 app.use("/api/exercise", exerciseRoutes);
 
+import { setsRoutes } from "./api/set/set.routes";
+app.use("/api/sets", setsRoutes);
+
 import { videoRoutes } from "./api/video/video.routes";
 app.use("/api/video", videoRoutes);
+
+import { programRoutes } from "./api/program/program.routes";
+app.use("/api/program", programRoutes);
 
 // Catch-all route
 app.get("/**", (req: Request, res: Response) => {

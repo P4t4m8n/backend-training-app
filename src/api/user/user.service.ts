@@ -77,11 +77,9 @@ async function getById(id: string, isSmall: boolean): Promise<TUser> {
   }
 }
 
-async function get(
-  filter: TUserFilter,
-  isSmall: boolean = false
-): Promise<TUser[]> {
-  const select = isSmall ? USER_SMALL_SELECT : USER_FULL_SELECT;
+async function get(filter: TUserFilter): Promise<TUser[]> {
+  const select = filter.isSmall ? USER_SMALL_SELECT : USER_FULL_SELECT;
+  delete filter.isSmall;
   try {
     const users = await prisma.user.findMany({
       where: filter,

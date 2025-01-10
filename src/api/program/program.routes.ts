@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { getPrograms, saveProgram } from "./program.controller";
+import {
+  createProgram,
+  getPrograms,
+  updateProgram,
+} from "./program.controller";
 
-export const programRouter = Router();
+export const programRoutes = Router();
 
-programRouter.get("/", getPrograms);
-programRouter.get("/:id", getPrograms);
-programRouter.post("/edit", saveProgram);
-programRouter.put("/edit/:id", saveProgram);
+programRoutes.get("/", getPrograms);
+programRoutes.get("/:id", getPrograms);
+programRoutes.post("/edit", createProgram);
+programRoutes.put("/edit/:id", updateProgram);

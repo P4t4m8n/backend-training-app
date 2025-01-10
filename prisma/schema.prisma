@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins", "omitApi"]
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -22,6 +22,7 @@ enum AuthStatus {
   PENDING
   SENT
   CONFIRMED
+  CANCELLED
 }
 
 model User {

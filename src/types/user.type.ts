@@ -20,5 +20,5 @@ export type TUserFilter = {
   phone?: string;
   isTrainer?: boolean;
   uniquePhoneId?: string;
-  isSmall: boolean;
+  isSmall?: boolean;
 };
