@@ -1,13 +1,13 @@
 import { TEntity } from "./app.type";
+import { TVideo } from "./video.type";
 
 export type TTraining = TEntity & {
-  videosURL: string[];
-  userVideosURL: string[];
-  exerciseId: string;
+  videos: TVideo[];
   set: number;
   goalSet: number;
   sets: Sets[];
   programId?: string;
+  name: string;
 };
 
 export type Sets = TEntity & {

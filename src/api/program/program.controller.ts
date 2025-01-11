@@ -27,10 +27,10 @@ export async function getProgramById(req: Request, res: Response) {
 export async function createProgram(req: Request, res: Response) {
   try {
     const programDto = req.body;
-    console.log("programDto:", programDto)
+    console.dir(programDto, { depth: null });
     const program = await programService.create(programDto);
     console.log("program:", program)
-    res.json(program);
+    res.json(programDto);
   } catch (error) {
     const err = AppError.create(error as string, 500);
     res.status(err.statusCode).json(err);

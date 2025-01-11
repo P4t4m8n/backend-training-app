@@ -19,8 +19,16 @@ const USER_SMALL_SELECT = {
 const USER_FULL_SELECT = {
   select: {
     ...USER_SMALL_SELECT.select,
-    programs: true,
-    trainer: true,
+    programs: {
+      include: {
+        training: {
+          include: {
+            sets: true,
+            videos: true,
+          },
+        },
+      },
+    },
   },
 };
 
@@ -65,7 +73,26 @@ async function getById(id: string, isSmall: boolean): Promise<TUser> {
     const user = await prisma.user.findUnique({
       relationLoadStrategy: "join",
       where: { id },
-      ...select,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        imgUrl: true,
+        isTrainer: true,
+        email: true,
+        uniquePhoneId: true,
+        programs: {
+          include: {
+            trainings: {
+              include: {
+                sets: true,
+                videos: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {

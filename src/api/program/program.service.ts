@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { DaysOfWeek, Prisma } from "@prisma/client";
 import prisma from "../../../prisma/prisma";
 import { AppError } from "../../services/Error.service";
 import {
@@ -15,6 +15,7 @@ async function get(filter: TProgramFilter): Promise<TProgram[]> {
       trainings: {
         include: {
           sets: true,
+          videos: true,
         },
       },
     },
@@ -31,6 +32,7 @@ async function getById(id: string): Promise<TProgram> {
       trainings: {
         include: {
           sets: true,
+          videos: true,
         },
       },
     },
@@ -43,13 +45,26 @@ async function getById(id: string): Promise<TProgram> {
   return program;
 }
 
-async function create(data: TProgramDto): Promise<TProgram> {
+async function create(data: TProgram): Promise<TProgram> {
+  const { programDto, trainings } = processProgramDto(data);
   const program = await prisma.program.create({
-    data,
+    data: {
+      ...programDto,
+      trainings: {
+        create: trainings.map((training) => ({
+          ...training,
+          set: +training.set,
+          goalSet: +training.goalSet,
+          sets: { create: training.sets },
+          videos: { create: training.videos },
+        })),
+      },
+    },
     include: {
       trainings: {
         include: {
           sets: true,
+          videos: true,
         },
       },
     },
@@ -80,6 +95,19 @@ async function remove(id: string): Promise<void> {
       id,
     },
   });
+}
+
+function processProgramDto(data: TProgram) {
+  const programDto: TProgramDto = {
+    name: data.name,
+    days: data.days.map((day) => day.toUpperCase() as DaysOfWeek),
+    startDate: data.startDate,
+    endDate: data.endDate,
+    userId: data.userId,
+  };
+
+  const trainings = data.trainings || [];
+  return { programDto, trainings };
 }
 
 export const programService = {

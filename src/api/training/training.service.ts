@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../../../prisma/prisma";
 import { AppError } from "../../services/Error.service";
 import { TTraining, TTrainingFilter } from "../../types/training.type";
+import { TVideo } from "../../types/video.type";
 
 async function get(filter: TTrainingFilter): Promise<TTraining[]> {
   const trainings = prisma.training.findMany({
@@ -9,8 +10,10 @@ async function get(filter: TTrainingFilter): Promise<TTraining[]> {
     relationLoadStrategy: "join",
     include: {
       sets: true,
+      videos: true,
     },
   });
+
   return trainings;
 }
 
@@ -21,6 +24,7 @@ async function getById(id: string): Promise<TTraining> {
     },
     include: {
       sets: true,
+      videos: true,
     },
   });
 
@@ -33,10 +37,8 @@ async function getById(id: string): Promise<TTraining> {
 
 async function create(trainingDto: TTraining): Promise<TTraining> {
   const data: {
-    videosURL: string[];
-    userVideosURL: string[];
-    exerciseId: string;
     set: number;
+    name: string;
     goalSet: number;
     programId: string;
     sets?: {
@@ -45,9 +47,7 @@ async function create(trainingDto: TTraining): Promise<TTraining> {
       };
     };
   } = {
-    videosURL: trainingDto.videosURL || [],
-    userVideosURL: trainingDto.userVideosURL || [],
-    exerciseId: trainingDto.exerciseId,
+    name: trainingDto.name,
     set: trainingDto.set,
     goalSet: trainingDto.goalSet,
     programId: trainingDto?.programId!,
@@ -65,18 +65,17 @@ async function create(trainingDto: TTraining): Promise<TTraining> {
     data,
     include: {
       sets: true,
+      videos: true,
     },
   });
 
   return training;
 }
 
-async function save(training: TTraining): Promise<TTraining> {
+async function save(trainingDto: TTraining): Promise<TTraining> {
   const data: {
-    videosURL: string[];
-    userVideosURL: string[];
-    exerciseId: string;
     set: number;
+    name: string;
     goalSet: number;
     programId: string;
     sets?: {
@@ -85,30 +84,29 @@ async function save(training: TTraining): Promise<TTraining> {
       };
     };
   } = {
-    videosURL: training.videosURL || [],
-    userVideosURL: training.userVideosURL || [],
-    exerciseId: training.exerciseId,
-    set: training.set,
-    goalSet: training.goalSet,
-    programId: training?.programId!,
+    name: trainingDto.name,
+    set: trainingDto.set,
+    goalSet: trainingDto.goalSet,
+    programId: trainingDto?.programId!,
   };
 
-  if (training?.sets) {
+  if (trainingDto?.sets) {
     data.sets = {
       createMany: {
-        data: training.sets,
+        data: trainingDto.sets,
       },
     };
   }
 
   const updatedTraining = await prisma.training.upsert({
     where: {
-      id: training.id,
+      id: trainingDto.id,
     },
     create: data,
     update: data,
     include: {
       sets: true,
+      videos: true,
     },
   });
 

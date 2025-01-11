@@ -25,6 +25,11 @@ enum AuthStatus {
   CANCELLED
 }
 
+enum VideoOwner {
+  USER
+  TRAINER
+}
+
 model User {
   id            String    @id @default(uuid())
   firstName     String    @default("")
@@ -56,33 +61,30 @@ model Trainer {
 }
 
 model Exercise {
-  id       String     @id @default(uuid())
-  name     String
-  training Training[]
+  id   String @id @default(uuid())
+  name String
 }
 
 model Program {
   id        String       @id @default(uuid())
-  days      DaysOfWeek[]
   name      String       @default("Program")
   startDate DateTime
   endDate   DateTime
-  trainings Training[]
   userId    String
   user      User         @relation(fields: [userId], references: [id])
+  days      DaysOfWeek[]
+  trainings Training[]
 }
 
 model Training {
-  id            String   @id @default(uuid())
-  videosURL     String[] @default([])
-  userVideosURL String[] @default([])
-  exerciseId    String
-  set           Int      @default(1)
-  goalSet       Int      @default(1)
-  exercise      Exercise @relation(fields: [exerciseId], references: [id])
-  sets          Sets[]
-  programId     String
-  program       Program  @relation(fields: [programId], references: [id])
+  id        String  @id @default(uuid())
+  set       Int     @default(1)
+  goalSet   Int     @default(1)
+  name      String
+  sets      Sets[]
+  programId String
+  program   Program @relation(fields: [programId], references: [id])
+  videos    Video[]
 }
 
 model Sets {
@@ -93,4 +95,18 @@ model Sets {
   rest       Int
   training   Training @relation(fields: [trainingId], references: [id])
   trainingId String
+}
+
+model Video {
+  id          String     @id @default(uuid())
+  duration    Int
+  format      String
+  height      Int
+  width       Int
+  playbackUrl String
+  url         String
+  assetId     String
+  trainingId  String
+  training    Training   @relation(fields: [trainingId], references: [id])
+  videoOwner  VideoOwner @default(TRAINER)
 }

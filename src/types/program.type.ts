@@ -6,7 +6,7 @@ export type TProgram = TEntity & {
   days: DaysOfWeek[];
   startDate: Date;
   endDate: Date;
-  trainings: TTraining[];
+  trainings?: TTraining[];
   userId: string;
   name: string;
 };
