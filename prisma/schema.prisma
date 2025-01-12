@@ -30,19 +30,59 @@ enum VideoOwner {
   TRAINER
 }
 
+enum VideoFormat {
+  MP4
+  MOV
+  AVI
+  FLV
+  WMV
+  MKV
+  WEBM
+}
+
+enum SetType {
+  DEFAULT
+  USER_HISTORY
+  TRAINER
+  TRAINER_HISTORY
+}
+
 model User {
-  id            String    @id @default(uuid())
-  firstName     String    @default("")
-  lastName      String    @default("")
-  email         String    @unique
+  id            String   @id @default(uuid())
+  firstName     String   @default("")
+  lastName      String   @default("")
+  email         String   @unique
   phone         String?
-  uniquePhoneId String?   @unique
+  uniquePhoneId String?  @unique
   imgUrl        String?
-  isTrainer     Boolean   @default(false)
+  createdAt     DateTime @default(now())
+  tokens        Token[]
   trainer       Trainer?
-  createdAt     DateTime  @default(now())
-  programs      Program[]
-  token         Token[]
+  trainee       Trainee?
+}
+
+model Trainee {
+  id             String              @id @default(uuid())
+  userId         String?             @unique
+  user           User?               @relation(fields: [userId], references: [id])
+  programs       Program[]
+  trainings      TrainingToTrainee[]
+  trainerId      String?
+  trainer        Trainer?            @relation(fields: [trainerId], references: [id])
+  TraineeMetrics TraineeMetrics[]
+}
+
+model TraineeMetrics {
+  id                    String   @id @default(uuid())
+  traineeId             String
+  trainee               Trainee  @relation(fields: [traineeId], references: [id])
+  heartRate             Int?
+  weight                Float?
+  height                Float?
+  age                   Float?
+  bloodPressureSystole  Int?
+  bloodPressureDiastole Int?
+  date                  DateTime @default(now())
 }
 
 model Token {
@@ -55,58 +95,77 @@ model Token {
 }
 
 model Trainer {
-  id     String  @id @default(uuid())
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id])
-}
-
-model Exercise {
-  id   String @id @default(uuid())
-  name String
+  id       String    @id @default(uuid())
+  userId   String?   @unique
+  user     User?     @relation(fields: [userId], references: [id])
+  trainees Trainee[]
+  programs Program[]
 }
 
 model Program {
-  id        String       @id @default(uuid())
-  name      String       @default("Program")
+  id        String              @id @default(uuid())
+  name      String              @default("Program")
   startDate DateTime
   endDate   DateTime
-  userId    String
-  user      User         @relation(fields: [userId], references: [id])
+  isActive  Boolean
   days      DaysOfWeek[]
-  trainings Training[]
+  trainings TrainingToTrainee[]
+  traineeId String?
+  trainee   Trainee?            @relation(fields: [traineeId], references: [id])
+  trainerId String?
+  trainer   Trainer?            @relation(fields: [trainerId], references: [id])
 }
 
 model Training {
-  id        String  @id @default(uuid())
-  set       Int     @default(1)
-  goalSet   Int     @default(1)
-  name      String
-  sets      Sets[]
-  programId String
-  program   Program @relation(fields: [programId], references: [id])
-  videos    Video[]
+  id                  String              @id @default(uuid())
+  set                 Int                 @default(1)
+  name                String
+  defaultSets         Set[]
+  trainingAssignments TrainingToTrainee[]
 }
 
-model Sets {
-  id         String   @id @default(uuid())
-  reps       Int
-  goalReps   Int
-  weight     Int
-  rest       Int
-  training   Training @relation(fields: [trainingId], references: [id])
-  trainingId String
+model Set {
+  id            String             @id @default(uuid())
+  reps          Int
+  weight        Int
+  rest          Int
+  setType       SetType
+  trainingId    String?
+  training      Training?          @relation(fields: [trainingId], references: [id])
+  traineeSetsId String?
+  traineeSets   TrainingToTrainee? @relation(fields: [traineeSetsId], references: [id], name: "traineeSets") //Trainee completed sets include history during program
+  trainerSetsId String?
+  trainerSets   TrainingToTrainee? @relation(fields: [trainerSetsId], references: [id], name: "trainerSets") //Trainer assigned sets include history during program
 }
 
 model Video {
-  id          String     @id @default(uuid())
-  duration    Int
-  format      String
-  height      Int
-  width       Int
-  playbackUrl String
-  url         String
-  assetId     String
-  trainingId  String
-  training    Training   @relation(fields: [trainingId], references: [id])
-  videoOwner  VideoOwner @default(TRAINER)
+  id                        String             @id @default(uuid())
+  duration                  Int
+  height                    Int
+  width                     Int
+  playbackUrl               String //Optimize URL from cloudinary to use with SDK
+  url                       String //Original URL from cloudinary
+  assetId                   String //Cloudinary asset ID for cloud storage
+  format                    VideoFormat
+  videoOwner                VideoOwner         @default(TRAINER)
+  trainerInstructionVideo   TrainingToTrainee? @relation(fields: [trainerInstructionVideoId], references: [id], name: "instructionVideos") //Trainer recorded instructions
+  trainerInstructionVideoId String?
+  traineeFeedbackVideo      TrainingToTrainee? @relation(fields: [traineeFeedbackVideoId], references: [id], name: "feedbackVideo") //Trainee recorded video for trainer feedback
+  traineeFeedbackVideoId    String?
+}
+
+model TrainingToTrainee {
+  id                String   @id @default(uuid())
+  traineeSet        Int //How much the trainee completed
+  trainerSet        Int //How much the trainer assigned
+  trainingId        String   @unique
+  training          Training @relation(fields: [trainingId], references: [id])
+  programId         String?
+  program           Program? @relation(fields: [programId], references: [id])
+  traineeId         String
+  trainee           Trainee  @relation(fields: [traineeId], references: [id])
+  instructionVideos Video[]  @relation("instructionVideos") //Trainer recorded instructions
+  feedbackVideos    Video[]  @relation("feedbackVideo") //Trainee recorded video for trainer feedback
+  traineeSets       Set[]    @relation("traineeSets") //Trainee completed sets include history during program
+  trainerSets       Set[]    @relation("trainerSets") //Trainer assigned sets include history during program
 }

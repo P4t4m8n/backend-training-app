@@ -1,20 +1,32 @@
 import { TEntity } from "./app.type";
+import { TSet } from "./set.type";
 import { TVideo } from "./video.type";
 
 export type TTraining = TEntity & {
-  videos: TVideo[];
   set: number;
-  goalSet: number;
-  sets: Sets[];
-  programId?: string;
   name: string;
+  defaultSets: TSet[];
 };
 
-export type Sets = TEntity & {
-  rest: number;
-  reps: number;
-  goalReps: number;
-  weight: number;
-  trainingId: string;
+export type TTrainingFilter = {
+  set?: number;
+  name?: string;
+  trainingAssignments?: boolean;
 };
-export type TTrainingFilter = {};
+
+export type TTrainingToTrainee = TEntity & {
+  traineeSet?: number;
+  traineeSets?: TSet[];
+  trainerSet?: number;
+  trainerSets?: TSet[];
+  training?: TTraining;
+  instructionVideos?: TVideo[];
+  feedbackVideos?: TVideo[];
+};
+
+export type TTrainingToTraineeDto = TEntity &
+  Omit<TTrainingToTrainee, "training"> & {
+    trainingId: string;
+    programId?: string;
+    traineeId: string;
+  };

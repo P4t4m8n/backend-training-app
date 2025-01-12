@@ -3,18 +3,24 @@ import { TEntity } from "./app.type";
 import { TTraining } from "./training.type";
 
 export type TProgram = TEntity & {
-  days: DaysOfWeek[];
+  name: string;
   startDate: Date;
   endDate: Date;
+  days: DaysOfWeek[];
   trainings?: TTraining[];
-  userId: string;
-  name: string;
+  isActive?: boolean;
 };
-export type TProgramDto = TEntity & {
-  days: DaysOfWeek[];
-  startDate: Date;
-  endDate: Date;
-  userId: string;
-  name: string;
+
+export type TProgramDto = TEntity &
+  Omit<TProgram, "trainings"> & {
+    traineeId?: string;
+    trainerId?: string;
+  };
+export type TProgramFilter = {
+  name?: string;
+  startDate?: Date;
+  endDate?: Date;
+  isActive?: boolean;
+  traineeId?: string;
+  trainerId?: string;
 };
-export type TProgramFilter = {};

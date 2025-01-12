@@ -9,7 +9,9 @@
     "build": "tsc",
     "gen": "pnpm prisma generate",
     "migrate": "prisma migrate dev",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "purge": "psql -U postgres -d trainingDB -f prisma/scripts/purge.sql",
+    "truncate": "psql -U postgres -d trainingDB -f prisma/scripts/truncate.sql"
   },
   "keywords": [],
   "author": "",
@@ -22,13 +24,13 @@
     "@types/nodemailer": "^6.4.17",
     "@types/sanitize-html": "^2.13.0",
     "nodemon": "^3.1.9",
-    "prisma": "^6.1.0",
+    "prisma": "^6.2.1",
     "ts-node": "10.9.2",
     "tsx": "^4.19.2",
     "typescript": "5.7.2"
   },
   "dependencies": {
-    "@prisma/client": "6.1.0",
+    "@prisma/client": "6.2.1",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
