@@ -1,9 +1,6 @@
-import { Prisma } from "@prisma/client";
 import { CookieOptions, Request, Response } from "express";
-import { TUser } from "../../types/user.type";
 import { authService } from "./auth.service";
 import { AppError } from "../../services/Error.service";
-import path from "path";
 import { validateUserDto } from "../user/user.validation";
 import { sanitizeUserDto } from "../user/user.sanitization";
 import { userService } from "../user/user.service";
@@ -28,7 +25,7 @@ export async function createTrainee(req: Request, res: Response) {
     const userData = sanitizeUserDto(data);
     const traineeMetrics = sanitizeTraineeMetricsDto(metricsData);
     const trainerId = data.trainee.trainerId;
-    console.log("trainerId:", trainerId)
+    console.log("trainerId:", trainerId);
     const user = await userService.createTrainee(
       userData,
       traineeMetrics,
