@@ -4,26 +4,36 @@ import { TUser } from "../../types/user.type";
 import { authService } from "./auth.service";
 import { AppError } from "../../services/Error.service";
 import path from "path";
-import { validateUserRequiredFields } from "../user/user.validation";
+import { validateUserDto } from "../user/user.validation";
 import { sanitizeUserDto } from "../user/user.sanitization";
 import { userService } from "../user/user.service";
 import { tokenService } from "./token.service";
+import { validateTraineeMetrics } from "../trainee/trainee.validation";
+import { sanitizeTraineeMetricsDto } from "../trainee/trainee.sanitization";
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI!;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
-
-export async function signUp(req: Request, res: Response) {
+export async function createTrainee(req: Request, res: Response) {
   try {
     let data = req.body;
+    const metricsData = data.trainee.metrics;
 
-    const requiredError = validateUserRequiredFields(data);
+    const requiredError = validateUserDto(data);
     if (requiredError.length > 0) {
-      throw AppError.create(requiredError.join(", "), 422);
+      throw AppError.create(requiredError.join(", "), 400);
+    }
+    const metricsErrors = validateTraineeMetrics(metricsData);
+    if (metricsErrors.length > 0) {
+      throw AppError.create(metricsErrors.join(", "), 400);
     }
 
     const userData = sanitizeUserDto(data);
-    const user = await userService.create(userData);
+    const traineeMetrics = sanitizeTraineeMetricsDto(metricsData);
+    const trainerId = data.trainee.trainerId;
+    console.log("trainerId:", trainerId)
+    const user = await userService.createTrainee(
+      userData,
+      traineeMetrics,
+      trainerId
+    );
     if (!user || !user?.id) {
       throw AppError.create("User not created", 500);
     }
@@ -37,7 +47,29 @@ export async function signUp(req: Request, res: Response) {
   }
 }
 
-export async function signIn(req: Request, res: Response) {}
+export async function createTrainer(req: Request, res: Response) {
+  try {
+    let data = req.body;
+
+    const requiredError = validateUserDto(data);
+    if (requiredError.length > 0) {
+      throw AppError.create(requiredError.join(", "), 422);
+    }
+
+    const userData = sanitizeUserDto(data);
+    const user = await userService.createTrainer(userData);
+    if (!user || !user?.id) {
+      throw AppError.create("User not created", 500);
+    }
+
+    const url = await authService.createMagicLink(user?.id);
+
+    res.status(201).json({ url });
+  } catch (error) {
+    const err = AppError.create(`Error signing up: ${error}`, 500, true);
+    res.status(err.statusCode).json(err);
+  }
+}
 
 export async function registry(req: Request, res: Response) {
   try {
@@ -59,6 +91,7 @@ export async function registry(req: Request, res: Response) {
 export async function validateUserSession(req: Request, res: Response) {
   try {
     const uniquePhoneId = req.params.token;
+    console.log("uniquePhoneId:", uniquePhoneId);
 
     const user = await authService.validateUserSession(uniquePhoneId);
     res.status(200).json(user);

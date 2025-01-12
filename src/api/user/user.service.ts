@@ -1,53 +1,21 @@
-import { Prisma, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "../../../prisma/prisma";
-import { TUser, TUserFilter } from "../../types/user.type";
+import {
+  TTraineeMetricsDto,
+  TUser,
+  TUserDto,
+  TUserFilter,
+} from "../../types/user.type";
 import { AppError } from "../../services/Error.service";
-
-const USER_SMALL_SELECT = {
+const USER_SELECT = {
   select: {
     id: true,
     firstName: true,
     lastName: true,
-    phone: true,
-    imgUrl: true,
-    isTrainer: true,
     email: true,
-    uniquePhoneId: true,
+    phone: true,
   },
 };
-
-const USER_FULL_SELECT = {
-  select: {
-    ...USER_SMALL_SELECT.select,
-    programs: {
-      include: {
-        training: {
-          include: {
-            sets: true,
-            videos: true,
-          },
-        },
-      },
-    },
-  },
-};
-
-async function create(userDto: Prisma.UserCreateInput): Promise<TUser> {
-  try {
-    const user = await prisma.user.create({
-      data: userDto,
-    });
-
-    if (!user) {
-      throw AppError.create("Error creating user in DB", 500);
-    }
-
-    return user;
-  } catch (error) {
-    throw error;
-  }
-}
-
 async function update(
   id: string,
   userDto: Prisma.UserUpdateInput
@@ -68,26 +36,70 @@ async function update(
 }
 
 async function getById(id: string, isSmall: boolean): Promise<TUser> {
-  const select = isSmall ? USER_SMALL_SELECT : USER_FULL_SELECT;
   try {
-    const user = await prisma.user.findUnique({
+    const userData = await prisma.user.findUnique({
       relationLoadStrategy: "join",
       where: { id },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        imgUrl: true,
-        isTrainer: true,
-        email: true,
-        uniquePhoneId: true,
-        programs: {
-          include: {
-            trainings: {
-              include: {
-                sets: true,
-                videos: true,
+      ...USER_SELECT,
+    });
+
+    if (!userData) {
+      throw AppError.create("User not found", 404);
+    }
+
+    return userData;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function get(filter: TUserFilter, isSmall: boolean): Promise<TUser[]> {
+  try {
+    const users = await prisma.user.findMany({
+      where: filter,
+      ...USER_SELECT,
+    });
+    return users;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function createTrainer(userDto: TUserDto): Promise<TUser> {
+  try {
+    const user = await prisma.user.create({
+      data: {
+        ...userDto,
+        trainer: {
+          create: {},
+        },
+      },
+    });
+
+    if (!user) {
+      throw AppError.create("Error creating user in DB", 500);
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+async function createTrainee(
+  userDto: TUserDto,
+  MetricsDto: TTraineeMetricsDto,
+  trainerId: string
+): Promise<TUser> {
+  try {
+    const user = await prisma.user.create({
+      data: {
+        ...userDto,
+        trainee: {
+          create: {
+            trainerId,
+            traineeMetrics: {
+              create: {
+                ...MetricsDto,
               },
             },
           },
@@ -96,31 +108,20 @@ async function getById(id: string, isSmall: boolean): Promise<TUser> {
     });
 
     if (!user) {
-      throw AppError.create("User not found", 404);
+      throw AppError.create("Error creating user in DB", 500);
     }
+    console.log("user:", user);
+
     return user;
   } catch (error) {
     throw error;
   }
 }
 
-async function get(filter: TUserFilter): Promise<TUser[]> {
-  const select = filter.isSmall ? USER_SMALL_SELECT : USER_FULL_SELECT;
-  delete filter.isSmall;
-  try {
-    const users = await prisma.user.findMany({
-      where: filter,
-      ...select,
-    });
-    return users;
-  } catch (error) {
-    throw error;
-  }
-}
-
 export const userService = {
-  create,
   update,
   get,
   getById,
+  createTrainer,
+  createTrainee,
 };

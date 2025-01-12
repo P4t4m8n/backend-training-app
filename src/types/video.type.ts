@@ -12,11 +12,10 @@ export type TVideo = TEntity & {
   videoOwner: VideoOwner;
 };
 
-export type TVideoDto = TEntity &
-  TVideo & {
-    trainerInstructionVideoId?: string;
-    traineeFeedbackVideoId?: string;
-  };
+export type TVideoDto = TVideo & {
+  trainerInstructionVideoId?: string;
+  traineeFeedbackVideoId?: string;
+};
 
 export type TVideoFilter = {
   assetId?: string;

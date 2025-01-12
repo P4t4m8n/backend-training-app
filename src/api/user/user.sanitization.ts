@@ -1,7 +1,7 @@
-import { TUser } from "../../types/user.type";
+import { TUser, TUserDto } from "../../types/user.type";
 import sanitizeHtml from "sanitize-html";
 
-export const sanitizeUserDto = (data: TUser): TUser => {
+export const sanitizeUserDto = (data: TUser): TUserDto => {
   return {
     email: sanitizeHtml(data?.email!),
     firstName: sanitizeHtml(data?.firstName!),

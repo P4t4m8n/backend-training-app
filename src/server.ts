@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { setupAsyncLocalStorage } from "../middlewares/localStorge.middleware";
+import { setupAsyncLocalStorage } from "../middlewares/localStorage.middleware";
 import cookieParser from "cookie-parser";
 import http from "http";
 import cors from "cors";
@@ -35,23 +35,23 @@ if (process.env.NODE_ENV === "production") {
 import { authRoutes } from "./api/auth/auth.routes";
 app.use("/api/auth", authRoutes);
 
-import { userRoutes } from "./api/user/user.routes";
-app.use("/api/user", userRoutes);
+// import { userRoutes } from "./api/user/user.routes";
+// app.use("/api/user", userRoutes);
 
-import { trainingRoutes } from "./api/training/training.routes";
-app.use("/api/training", trainingRoutes);
+// import { trainingRoutes } from "./api/training/training.routes";
+// app.use("/api/training", trainingRoutes);
 
-import { exerciseRoutes } from "./api/exercise/exercise.routes";
-app.use("/api/exercise", exerciseRoutes);
+// import { exerciseRoutes } from "./api/exercise/exercise.routes";
+// app.use("/api/exercise", exerciseRoutes);
 
-import { setsRoutes } from "./api/set/set.routes";
-app.use("/api/sets", setsRoutes);
+// import { setsRoutes } from "./api/set/set.routes";
+// app.use("/api/sets", setsRoutes);
 
-import { videoRoutes } from "./api/video/video.routes";
-app.use("/api/video", videoRoutes);
+// import { videoRoutes } from "./api/video/video.routes";
+// app.use("/api/video", videoRoutes);
 
-import { programRoutes } from "./api/program/program.routes";
-app.use("/api/program", programRoutes);
+// import { programRoutes } from "./api/program/program.routes";
+// app.use("/api/program", programRoutes);
 
 // Catch-all route
 app.get("/**", (req: Request, res: Response) => {

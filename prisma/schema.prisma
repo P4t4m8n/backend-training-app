@@ -64,18 +64,18 @@ model User {
 model Trainee {
   id             String              @id @default(uuid())
   userId         String?             @unique
-  user           User?               @relation(fields: [userId], references: [id])
+  user           User?               @relation(fields: [userId], references: [id], onDelete: Cascade)
   programs       Program[]
   trainings      TrainingToTrainee[]
   trainerId      String?
   trainer        Trainer?            @relation(fields: [trainerId], references: [id])
-  TraineeMetrics TraineeMetrics[]
+  traineeMetrics TraineeMetrics[]
 }
 
 model TraineeMetrics {
   id                    String   @id @default(uuid())
   traineeId             String
-  trainee               Trainee  @relation(fields: [traineeId], references: [id])
+  trainee               Trainee  @relation(fields: [traineeId], references: [id], onDelete: Cascade)
   heartRate             Int?
   weight                Float?
   height                Float?

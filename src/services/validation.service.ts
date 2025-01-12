@@ -45,9 +45,34 @@ const validateLettersAndNumbers = (
   return null;
 };
 
+const validateLetters = (filedName: string, value?: string): string | null => {
+  if (!value) {
+    return `${filedName} is required.`;
+  }
+  if (!/^[a-zA-Z]+$/.test(value)) {
+    return `${filedName} contain only letters.`;
+  }
+  return null;
+};
+
+const validateNumbers = (
+  filedName: string,
+  value?: string | number
+): string | null => {
+  if (!value) {
+    return `${filedName} is required.`;
+  }
+  if (!/^[0-9]+$/.test(value.toString())) {
+    return `${filedName} contain only numbers.`;
+  }
+  return null;
+};
+
 export const validationService = {
   validateStrLength,
   validateArrayLength,
   validateExistence,
   validateLettersAndNumbers,
+  validateLetters,
+  validateNumbers,
 };

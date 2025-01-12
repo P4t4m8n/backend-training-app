@@ -1,13 +1,13 @@
 import { DaysOfWeek } from "@prisma/client";
 import { TEntity } from "./app.type";
-import { TTraining } from "./training.type";
+import { TTraining, TTrainingToTrainee } from "./training.type";
 
 export type TProgram = TEntity & {
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  days: DaysOfWeek[];
-  trainings?: TTraining[];
+  name?: string;
+  startDate?: Date;
+  endDate?: Date;
+  days?: DaysOfWeek[];
+  trainings?: TTrainingToTrainee[];
   isActive?: boolean;
 };
 

@@ -29,7 +29,6 @@ export async function createProgram(req: Request, res: Response) {
     const programDto = req.body;
     console.dir(programDto, { depth: null });
     const program = await programService.create(programDto);
-    console.log("program:", program)
     res.json(programDto);
   } catch (error) {
     const err = AppError.create(error as string, 500);

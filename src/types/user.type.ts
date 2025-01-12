@@ -9,22 +9,25 @@ export type TUser = TEntity & {
   phone?: string | null;
   uniquePhoneId?: string | null;
   imgUrl?: string | null;
-  trainer?: TTrainer;
-  trainee?: TTrainee;
+  trainer?: TTrainer | null;
+  trainee?: TTrainee | null;
 };
 
 export type TUserDto = Omit<TUser, "trainer" | "trainee">;
+export type TUserCreateDto = Omit<TUser, "id">;
 
 export type TUserFilter = {
   email?: string;
   phone?: string;
+  uniquePhoneId?: string;
 };
 
 export type TTrainee = TEntity & {
-  programs: TProgram[];
-  trainings: TTrainingToTrainee;
+  programs?: TProgram[];
+  trainings?: TTrainingToTrainee[];
   trainer?: Omit<TUser, "trainee" | "uniquePhoneId">;
   metrics?: TTraineeMetrics;
+  trainerId?: string;
 };
 
 export type TraineeDto = TEntity & {
@@ -43,7 +46,7 @@ export type TTraineeMetrics = TEntity & {
 };
 
 export type TTraineeMetricsDto = Omit<TTraineeMetrics, "date"> & {
-  traineeId: string;
+  traineeId?: string;
 };
 
 export type TTrainer = TEntity & {

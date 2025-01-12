@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { asyncLocalStorage } from "./localStorge.middleware";
+import { asyncLocalStorage } from "./localStorage.middleware";
 import Logger from "../src/services/Logger.service";
 
 export async function requireAuth(
@@ -30,9 +30,7 @@ export async function requireAdmin(
   }
 
   if (!loggedinUser.isTrainer) {
-    Logger.warn(
-      `${loggedinUser.id} attempted to perform admin action`
-    );
+    Logger.warn(`${loggedinUser.id} attempted to perform admin action`);
     res.status(403).send("Not Authorized");
     return;
   }

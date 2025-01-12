@@ -8,12 +8,11 @@ export type TSet = TEntity & {
   setType: SetType;
 };
 
-export type TSetDto = TEntity &
-  TSet & {
-    trainingId?: string;
-    traineeSetsId?: string;
-    trainerSetsId?: string;
-  };
+export type TSetDto = TSet & {
+  trainingId?: string;
+  traineeSetsId?: string;
+  trainerSetsId?: string;
+};
 
 export type TSetFilter = {
   reps?: number;

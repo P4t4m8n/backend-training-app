@@ -4,14 +4,14 @@ import { userService } from "./user.service";
 import { AppError } from "../../services/Error.service";
 import { TUser, TUserFilter } from "../../types/user.type";
 import { userUtil } from "./user.util";
-import { validateUserRequiredFields } from "./user.validation";
 import { sanitizeUserDto } from "./user.sanitization";
+import { validateUserDto } from "./user.validation";
 
 export async function createUser(req: Request, res: Response) {
   try {
     let data = req.body;
 
-    const requiredError = validateUserRequiredFields(data);
+    const requiredError = validateUserDto(data);
     if (requiredError.length > 0) {
       throw AppError.create(requiredError.join(", "), 422);
     }
@@ -46,9 +46,7 @@ export async function updateUser(req: Request, res: Response) {
 export async function getUserById(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    console.log("id:", id)
     const user = await userService.getById(id, false);
-    console.log("user:", user);
     //TODO add error handling
 
     res.status(200).json(user);
@@ -62,10 +60,12 @@ export async function getUserById(req: Request, res: Response) {
 export async function getUsers(req: Request, res: Response) {
   try {
     const query = req.query;
-    const users = await userService.get({
-      ...(query as unknown as TUserFilter),
-      isSmall: true,
-    });
+    const users = await userService.get(
+      {
+        ...(query as unknown as TUserFilter),
+      },
+      false
+    );
 
     res.status(200).json(users);
   } catch (error) {

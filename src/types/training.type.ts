@@ -19,7 +19,7 @@ export type TTrainingToTrainee = TEntity & {
   traineeSets?: TSet[];
   trainerSet?: number;
   trainerSets?: TSet[];
-  training?: TTraining;
+  training?: Omit<TTraining, "defaultSets" | "set">;
   instructionVideos?: TVideo[];
   feedbackVideos?: TVideo[];
 };
