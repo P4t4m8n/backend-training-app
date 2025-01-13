@@ -1,7 +1,7 @@
 import { validationService } from "../../services/validation.service";
-import { TUser } from "../../types/user.type";
+import { TUser, TUserCreateDto, TUserUpdateDto } from "../../types/user.type";
 
-export const validateUserDto = (userDto: TUser) => {
+export const validateUserDto = (userDto: TUserCreateDto | TUserUpdateDto) => {
   const errors: string[] = [];
 
   const emailError = _validateEmail(userDto?.email);
@@ -26,6 +26,7 @@ export const validateUserDto = (userDto: TUser) => {
     "Last name",
     userDto?.lastName
   );
+  if (lastNameErrorLen) errors.push(lastNameErrorLen);
 
   const lastNameError = validationService.validateLetters(
     "Last name",
@@ -35,8 +36,6 @@ export const validateUserDto = (userDto: TUser) => {
 
   return errors;
 };
-
-
 
 /**
  * Private function.

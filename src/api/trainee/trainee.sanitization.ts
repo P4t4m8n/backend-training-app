@@ -1,10 +1,5 @@
-import {
-  TTraineeMetrics,
-  TTraineeMetricsDto,
-  TUser,
-  TUserDto,
-} from "../../types/user.type";
 import sanitizeHtml from "sanitize-html";
+import { TTraineeMetricsDto } from "./trainee.type";
 
 export const sanitizeTraineeMetricsDto = (
   data: TTraineeMetricsDto

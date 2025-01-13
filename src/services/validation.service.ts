@@ -57,7 +57,7 @@ const validateLetters = (filedName: string, value?: string): string | null => {
 
 const validateNumbers = (
   filedName: string,
-  value?: string | number
+  value?: string | number|null
 ): string | null => {
   if (!value) {
     return `${filedName} is required.`;

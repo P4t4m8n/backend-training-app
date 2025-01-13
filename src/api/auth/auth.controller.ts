@@ -1,41 +1,45 @@
 import { CookieOptions, Request, Response } from "express";
+
 import { authService } from "./auth.service";
 import { AppError } from "../../services/Error.service";
-import { validateUserDto } from "../user/user.validation";
-import { sanitizeUserDto } from "../user/user.sanitization";
-import { userService } from "../user/user.service";
 import { tokenService } from "./token.service";
 import { validateTraineeMetrics } from "../trainee/trainee.validation";
 import { sanitizeTraineeMetricsDto } from "../trainee/trainee.sanitization";
+import { trainerService } from "../trainer/trainer.service";
+import { traineeService } from "../trainee/trainee.service";
+import { validateUserDto } from "../user/user.validation";
+import { sanitizeUserDto } from "../user/user.sanitization";
+
+import { TTrainerDto } from "../trainer/trainer.type";
+import { TTraineeCreateDto } from "../trainee/trainee.type";
+import { TUserCreateDto } from "../../types/user.type";
 
 export async function createTrainee(req: Request, res: Response) {
   try {
-    let data = req.body;
-    const metricsData = data.trainee.metrics;
+    let data: TTraineeCreateDto = req.body;
 
-    const requiredError = validateUserDto(data);
+    const requiredError = validateUserDto(data.userDto);
     if (requiredError.length > 0) {
       throw AppError.create(requiredError.join(", "), 400);
     }
-    const metricsErrors = validateTraineeMetrics(metricsData);
+    const metricsErrors = validateTraineeMetrics(data?.metricsDto);
     if (metricsErrors.length > 0) {
       throw AppError.create(metricsErrors.join(", "), 400);
     }
 
-    const userData = sanitizeUserDto(data);
-    const traineeMetrics = sanitizeTraineeMetricsDto(metricsData);
-    const trainerId = data.trainee.trainerId;
-    console.log("trainerId:", trainerId);
-    const user = await userService.createTrainee(
-      userData,
-      traineeMetrics,
-      trainerId
-    );
-    if (!user || !user?.id) {
+    const userDto = sanitizeUserDto(data.userDto) as TUserCreateDto;
+    const metricsDto = sanitizeTraineeMetricsDto(data?.metricsDto!);
+    const trainerId = data.trainerId;
+    const id = await traineeService.create({
+      userDto,
+      metricsDto,
+      trainerId,
+    });
+    if (!id) {
       throw AppError.create("User not created", 500);
     }
 
-    const url = await authService.createMagicLink(user?.id);
+    const url = await authService.createMagicLink(id);
 
     res.status(201).json({ url });
   } catch (error) {
@@ -46,20 +50,17 @@ export async function createTrainee(req: Request, res: Response) {
 
 export async function createTrainer(req: Request, res: Response) {
   try {
-    let data = req.body;
+    const data: TTrainerDto = req.body;
 
-    const requiredError = validateUserDto(data);
+    const requiredError = validateUserDto(data?.userDto);
     if (requiredError.length > 0) {
-      throw AppError.create(requiredError.join(", "), 422);
+      throw AppError.create(requiredError.join(", "), 400);
     }
 
-    const userData = sanitizeUserDto(data);
-    const user = await userService.createTrainer(userData);
-    if (!user || !user?.id) {
-      throw AppError.create("User not created", 500);
-    }
+    const userDto = sanitizeUserDto(data?.userDto);
+    const userId = await trainerService.create({ userDto });
 
-    const url = await authService.createMagicLink(user?.id);
+    const url = await authService.createMagicLink(userId);
 
     res.status(201).json({ url });
   } catch (error) {
@@ -88,7 +89,6 @@ export async function registry(req: Request, res: Response) {
 export async function validateUserSession(req: Request, res: Response) {
   try {
     const uniquePhoneId = req.params.token;
-    console.log("uniquePhoneId:", uniquePhoneId);
 
     const user = await authService.validateUserSession(uniquePhoneId);
     res.status(200).json(user);

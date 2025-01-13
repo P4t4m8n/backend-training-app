@@ -1,0 +1,172 @@
+[
+  {
+    "userDto": {
+      "email": "john@johnson.com",
+      "firstName": "John",
+      "lastName": "Johnson",
+      "phone": "1234567890"
+    },
+    "metricsDto": {
+      "weight": 93,
+      "height": 181,
+      "age": 44,
+      "heartRate": 78,
+      "bloodPressureSystole": 120,
+      "bloodPressureDiastole": 86
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "doe@doe.com",
+      "firstName": "Doe",
+      "lastName": "Doe",
+      "phone": "0987654321"
+    },
+    "metricsDto": {
+      "weight": 99,
+      "height": 179,
+      "age": 26,
+      "heartRate": 82,
+      "bloodPressureSystole": 134,
+      "bloodPressureDiastole": 81
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "jane@smith.com",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "phone": "1111111111"
+    },
+    "metricsDto": {
+      "weight": 55,
+      "height": 164,
+      "age": 38,
+      "heartRate": 83,
+      "bloodPressureSystole": 122,
+      "bloodPressureDiastole": 81
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "smith@wonderland.com",
+      "firstName": "Smith",
+      "lastName": "Wonderland",
+      "phone": "2222222222"
+    },
+    "metricsDto": {
+      "weight": 85,
+      "height": 169,
+      "age": 56,
+      "heartRate": 66,
+      "bloodPressureSystole": 136,
+      "bloodPressureDiastole": 66
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "alice@marley.com",
+      "firstName": "Alice",
+      "lastName": "Marley",
+      "phone": "3333333333"
+    },
+    "metricsDto": {
+      "weight": 81,
+      "height": 160,
+      "age": 41,
+      "heartRate": 77,
+      "bloodPressureSystole": 101,
+      "bloodPressureDiastole": 85
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "wonderland@brown.com",
+      "firstName": "Wonderland",
+      "lastName": "Brown",
+      "phone": "4444444444"
+    },
+    "metricsDto": {
+      "weight": 54,
+      "height": 154,
+      "age": 32,
+      "heartRate": 96,
+      "bloodPressureSystole": 124,
+      "bloodPressureDiastole": 67
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "bob@white.com",
+      "firstName": "Bob",
+      "lastName": "White",
+      "phone": "5555555555"
+    },
+    "metricsDto": {
+      "weight": 79,
+      "height": 185,
+      "age": 27,
+      "heartRate": 78,
+      "bloodPressureSystole": 120,
+      "bloodPressureDiastole": 88
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "marley@black.com",
+      "firstName": "Marley",
+      "lastName": "Black",
+      "phone": "6666666666"
+    },
+    "metricsDto": {
+      "weight": 93,
+      "height": 185,
+      "age": 23,
+      "heartRate": 60,
+      "bloodPressureSystole": 121,
+      "bloodPressureDiastole": 72
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "charlie@green.com",
+      "firstName": "Charlie",
+      "lastName": "Green",
+      "phone": "7777777777"
+    },
+    "metricsDto": {
+      "weight": 62,
+      "height": 199,
+      "age": 20,
+      "heartRate": 60,
+      "bloodPressureSystole": 124,
+      "bloodPressureDiastole": 90
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  },
+  {
+    "userDto": {
+      "email": "brown@blue.com",
+      "firstName": "Brown",
+      "lastName": "Blue",
+      "phone": "8888888888"
+    },
+    "metricsDto": {
+      "weight": 82,
+      "height": 152,
+      "age": 20,
+      "heartRate": 73,
+      "bloodPressureSystole": 103,
+      "bloodPressureDiastole": 78
+    },
+    "trainerId": "a9fa7ea2-824f-49f4-b75a-8bcd9e33795d"
+  }
+]

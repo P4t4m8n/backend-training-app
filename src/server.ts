@@ -35,6 +35,9 @@ if (process.env.NODE_ENV === "production") {
 import { authRoutes } from "./api/auth/auth.routes";
 app.use("/api/auth", authRoutes);
 
+import { traineeRoutes } from "./api/trainee/trainee.routes";
+app.use("/api/trainee", traineeRoutes);
+
 // import { userRoutes } from "./api/user/user.routes";
 // app.use("/api/user", userRoutes);
 

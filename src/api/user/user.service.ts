@@ -1,11 +1,6 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../../../prisma/prisma";
-import {
-  TTraineeMetricsDto,
-  TUser,
-  TUserDto,
-  TUserFilter,
-} from "../../types/user.type";
+import { TUser, TUserFilter } from "../../types/user.type";
 import { AppError } from "../../services/Error.service";
 const USER_SELECT = {
   select: {
@@ -65,63 +60,8 @@ async function get(filter: TUserFilter, isSmall: boolean): Promise<TUser[]> {
   }
 }
 
-async function createTrainer(userDto: TUserDto): Promise<TUser> {
-  try {
-    const user = await prisma.user.create({
-      data: {
-        ...userDto,
-        trainer: {
-          create: {},
-        },
-      },
-    });
-
-    if (!user) {
-      throw AppError.create("Error creating user in DB", 500);
-    }
-
-    return user;
-  } catch (error) {
-    throw error;
-  }
-}
-async function createTrainee(
-  userDto: TUserDto,
-  MetricsDto: TTraineeMetricsDto,
-  trainerId: string
-): Promise<TUser> {
-  try {
-    const user = await prisma.user.create({
-      data: {
-        ...userDto,
-        trainee: {
-          create: {
-            trainerId,
-            traineeMetrics: {
-              create: {
-                ...MetricsDto,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      throw AppError.create("Error creating user in DB", 500);
-    }
-    console.log("user:", user);
-
-    return user;
-  } catch (error) {
-    throw error;
-  }
-}
-
 export const userService = {
   update,
   get,
   getById,
-  createTrainer,
-  createTrainee,
 };

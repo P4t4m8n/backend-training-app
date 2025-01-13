@@ -1,7 +1,7 @@
 import { validationService } from "../../services/validation.service";
-import { TTraineeMetricsDto } from "../../types/user.type";
+import { TTraineeMetricsDto } from "./trainee.type";
 
-export const validateTraineeMetrics = (metricsDto: TTraineeMetricsDto) => {
+export const validateTraineeMetrics = (metricsDto?: TTraineeMetricsDto) => {
   const errors: string[] = [];
 
   const weightError = validationService.validateNumbers(

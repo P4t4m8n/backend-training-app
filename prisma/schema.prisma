@@ -62,14 +62,14 @@ model User {
 }
 
 model Trainee {
-  id             String              @id @default(uuid())
-  userId         String?             @unique
-  user           User?               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  programs       Program[]
-  trainings      TrainingToTrainee[]
-  trainerId      String?
-  trainer        Trainer?            @relation(fields: [trainerId], references: [id])
-  traineeMetrics TraineeMetrics[]
+  id        String              @id @default(uuid())
+  userId    String              @unique
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programs  Program[]
+  trainings TrainingToTrainee[]
+  trainerId String
+  trainer   Trainer             @relation(fields: [trainerId], references: [id])
+  metrics   TraineeMetrics[]
 }
 
 model TraineeMetrics {
@@ -89,15 +89,15 @@ model Token {
   id        String     @id @default(uuid())
   token     String     @unique
   userId    String
-  user      User       @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime   @default(now())
   status    AuthStatus @default(PENDING)
 }
 
 model Trainer {
   id       String    @id @default(uuid())
-  userId   String?   @unique
-  user     User?     @relation(fields: [userId], references: [id])
+  userId   String    @unique
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   trainees Trainee[]
   programs Program[]
 }
@@ -111,9 +111,9 @@ model Program {
   days      DaysOfWeek[]
   trainings TrainingToTrainee[]
   traineeId String?
-  trainee   Trainee?            @relation(fields: [traineeId], references: [id])
+  trainee   Trainee?            @relation(fields: [traineeId], references: [id], onDelete: Cascade)
   trainerId String?
-  trainer   Trainer?            @relation(fields: [trainerId], references: [id])
+  trainer   Trainer?            @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 }
 
 model Training {
@@ -148,9 +148,9 @@ model Video {
   assetId                   String //Cloudinary asset ID for cloud storage
   format                    VideoFormat
   videoOwner                VideoOwner         @default(TRAINER)
-  trainerInstructionVideo   TrainingToTrainee? @relation(fields: [trainerInstructionVideoId], references: [id], name: "instructionVideos") //Trainer recorded instructions
+  trainerInstructionVideo   TrainingToTrainee? @relation(fields: [trainerInstructionVideoId], references: [id], name: "instructionVideos", onDelete: Cascade) //Trainer recorded instructions
   trainerInstructionVideoId String?
-  traineeFeedbackVideo      TrainingToTrainee? @relation(fields: [traineeFeedbackVideoId], references: [id], name: "feedbackVideo") //Trainee recorded video for trainer feedback
+  traineeFeedbackVideo      TrainingToTrainee? @relation(fields: [traineeFeedbackVideoId], references: [id], name: "feedbackVideo", onDelete: Cascade) //Trainee recorded video for trainer feedback
   traineeFeedbackVideoId    String?
 }
 
@@ -159,11 +159,11 @@ model TrainingToTrainee {
   traineeSet        Int //How much the trainee completed
   trainerSet        Int //How much the trainer assigned
   trainingId        String   @unique
-  training          Training @relation(fields: [trainingId], references: [id])
+  training          Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
   programId         String?
-  program           Program? @relation(fields: [programId], references: [id])
+  program           Program? @relation(fields: [programId], references: [id], onDelete: Cascade)
   traineeId         String
-  trainee           Trainee  @relation(fields: [traineeId], references: [id])
+  trainee           Trainee  @relation(fields: [traineeId], references: [id], onDelete: Cascade)
   instructionVideos Video[]  @relation("instructionVideos") //Trainer recorded instructions
   feedbackVideos    Video[]  @relation("feedbackVideo") //Trainee recorded video for trainer feedback
   traineeSets       Set[]    @relation("traineeSets") //Trainee completed sets include history during program
