@@ -3,7 +3,6 @@ import { TSet } from "./set.type";
 import { TVideo } from "./video.type";
 
 export type TTraining = TEntity & {
-  set: number;
   name: string;
   defaultSets: TSet[];
 };
@@ -11,7 +10,8 @@ export type TTraining = TEntity & {
 export type TTrainingFilter = {
   set?: number;
   name?: string;
-  trainingAssignments?: boolean;
+  skip?: number;
+  take?: number;
 };
 
 export type TTrainingToTrainee = TEntity & {

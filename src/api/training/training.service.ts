@@ -4,17 +4,16 @@ import { AppError } from "../../services/Error.service";
 import { TTraining, TTrainingFilter } from "../../types/training.type";
 import { TVideo } from "../../types/video.type";
 
-async function get(filter: TTrainingFilter): Promise<TTraining[]> {
-  const trainings = prisma.training.findMany({
+async function get(filter: TTrainingFilter) {
+  const { set, name, skip, take } = filter;
+  return prisma.training.findMany({
     where: filter,
-    relationLoadStrategy: "join",
     include: {
-      sets: true,
-      videos: true,
+      defaultSets: true,
     },
+    skip,
+    take,
   });
-
-  return trainings;
 }
 
 async function getById(id: string): Promise<TTraining> {
@@ -23,8 +22,7 @@ async function getById(id: string): Promise<TTraining> {
       id,
     },
     include: {
-      sets: true,
-      videos: true,
+      defaultSets: true,
     },
   });
 
@@ -35,83 +33,22 @@ async function getById(id: string): Promise<TTraining> {
   return training;
 }
 
-async function create(trainingDto: TTraining): Promise<TTraining> {
-  const data: {
-    set: number;
-    name: string;
-    goalSet: number;
-    programId: string;
-    sets?: {
-      createMany: {
-        data: Prisma.SetsCreateManyInput[];
-      };
-    };
-  } = {
-    name: trainingDto.name,
-    set: trainingDto.set,
-    goalSet: trainingDto.goalSet,
-    programId: trainingDto?.programId!,
-  };
-
-  if (trainingDto.sets) {
-    data.sets = {
-      createMany: {
-        data: trainingDto.sets,
+async function create(trainingDto: TTraining): Promise<string> {
+  const { id } = await prisma.training.create({
+    data: {
+      name: trainingDto.name,
+      defaultSets: {
+        createMany: {
+          data: trainingDto.defaultSets,
+        },
       },
-    };
-  }
-
-  const training = await prisma.training.create({
-    data,
-    include: {
-      sets: true,
-      videos: true,
     },
   });
 
-  return training;
+  return id;
 }
 
-async function save(trainingDto: TTraining): Promise<TTraining> {
-  const data: {
-    set: number;
-    name: string;
-    goalSet: number;
-    programId: string;
-    sets?: {
-      createMany: {
-        data: Prisma.SetsCreateManyInput[];
-      };
-    };
-  } = {
-    name: trainingDto.name,
-    set: trainingDto.set,
-    goalSet: trainingDto.goalSet,
-    programId: trainingDto?.programId!,
-  };
-
-  if (trainingDto?.sets) {
-    data.sets = {
-      createMany: {
-        data: trainingDto.sets,
-      },
-    };
-  }
-
-  const updatedTraining = await prisma.training.upsert({
-    where: {
-      id: trainingDto.id,
-    },
-    create: data,
-    update: data,
-    include: {
-      sets: true,
-      videos: true,
-    },
-  });
-
-  return updatedTraining;
-}
+async function update(trainingDto: TTraining) {}
 
 async function remove(id: string): Promise<void> {
   await prisma.training.delete({
@@ -125,6 +62,6 @@ export const trainingService = {
   get,
   getById,
   create,
-  save,
+  update,
   remove,
 };

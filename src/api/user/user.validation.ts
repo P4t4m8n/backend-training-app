@@ -8,8 +8,8 @@ export const validateUserDto = (userDto: TUserCreateDto | TUserUpdateDto) => {
   if (emailError) errors.push(emailError);
 
   const firstNameErrorLen = validationService.validateStrLength(
-    2,
     "First name",
+    2,
     userDto?.firstName
   );
 
@@ -22,8 +22,8 @@ export const validateUserDto = (userDto: TUserCreateDto | TUserUpdateDto) => {
   if (firstNameError) errors.push(firstNameError);
 
   const lastNameErrorLen = validationService.validateStrLength(
-    2,
     "Last name",
+    2,
     userDto?.lastName
   );
   if (lastNameErrorLen) errors.push(lastNameErrorLen);

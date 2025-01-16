@@ -118,7 +118,6 @@ model Program {
 
 model Training {
   id                  String              @id @default(uuid())
-  set                 Int                 @default(1)
   name                String
   defaultSets         Set[]
   trainingAssignments TrainingToTrainee[]

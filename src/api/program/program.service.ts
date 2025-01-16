@@ -1,24 +1,12 @@
 import { DaysOfWeek, Prisma } from "@prisma/client";
 import prisma from "../../../prisma/prisma";
 import { AppError } from "../../services/Error.service";
-import {
-  TProgram,
-  TProgramDto,
-  TProgramFilter,
-} from "../../types/program.type";
+import { TProgram, TProgramDto, TProgramFilter } from "./program.type";
 
 async function get(filter: TProgramFilter): Promise<TProgram[]> {
   const programs = prisma.program.findMany({
     where: filter,
     relationLoadStrategy: "join",
-    include: {
-      trainings: {
-        include: {
-          sets: true,
-          videos: true,
-        },
-      },
-    },
   });
   return programs;
 }
@@ -29,10 +17,25 @@ async function getById(id: string): Promise<TProgram> {
       id,
     },
     include: {
-      trainings: {
-        include: {
-          sets: true,
-          videos: true,
+      trainings: true,
+      trainer: {
+        select: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+      trainee: {
+        select: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
       },
     },
@@ -45,31 +48,24 @@ async function getById(id: string): Promise<TProgram> {
   return program;
 }
 
-async function create(data: TProgram): Promise<TProgram> {
-  const { programDto, trainings } = processProgramDto(data);
-  const program = await prisma.program.create({
+async function create(data: Omit<TProgramDto, "trainings">): Promise<string> {
+  const startDate = new Date(data.startDate!);
+  const endDate = new Date(data?.endDate!);
+  const { id } = await prisma.program.create({
     data: {
-      ...programDto,
-      trainings: {
-        create: trainings.map((training) => ({
-          ...training,
-          set: +training.set,
-          goalSet: +training.goalSet,
-          sets: { create: training.sets },
-          videos: { create: training.videos },
-        })),
-      },
+      name: data.name,
+      startDate,
+      endDate,
+      days: data.days,
+      isActive: false,
+      traineeId: data.traineeId,
+      trainerId: data.trainerId,
     },
-    include: {
-      trainings: {
-        include: {
-          sets: true,
-          videos: true,
-        },
-      },
+    select: {
+      id: true,
     },
   });
-  return program;
+  return id;
 }
 
 async function update(data: TProgramDto) {
@@ -79,11 +75,7 @@ async function update(data: TProgramDto) {
     },
     data,
     include: {
-      trainings: {
-        include: {
-          sets: true,
-        },
-      },
+      trainings: {},
     },
   });
   return program;
@@ -95,19 +87,6 @@ async function remove(id: string): Promise<void> {
       id,
     },
   });
-}
-
-function processProgramDto(data: TProgram) {
-  const programDto: TProgramDto = {
-    name: data.name,
-    days: data.days.map((day) => day.toUpperCase() as DaysOfWeek),
-    startDate: data.startDate,
-    endDate: data.endDate,
-    userId: data.userId,
-  };
-
-  const trainings = data.trainings || [];
-  return { programDto, trainings };
 }
 
 export const programService = {

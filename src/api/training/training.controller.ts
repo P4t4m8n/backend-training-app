@@ -24,11 +24,13 @@ export async function getTrainingById(req: Request, res: Response) {
   }
 }
 
-export async function saveTraining(req: Request, res: Response) {
+export async function createTraining(req: Request, res: Response) {
   try {
     const training = req.body;
-    const newTraining = await trainingService.create(training);
-    res.status(201).json(newTraining);
+    console.log("training:", training);
+    const id = await trainingService.create(training);
+    console.log("id:", id);
+    res.status(201).json(id);
   } catch (error) {
     const err = AppError.create(error as string);
     res.status(500).json({ message: err });

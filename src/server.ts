@@ -38,11 +38,15 @@ app.use("/api/auth", authRoutes);
 import { traineeRoutes } from "./api/trainee/trainee.routes";
 app.use("/api/trainee", traineeRoutes);
 
+import { programRoutes } from "./api/program/program.routes";
+app.use("/api/program", programRoutes);
+
+import { trainingRoutes } from "./api/training/training.routes";
+app.use("/api/training", trainingRoutes);
+
 // import { userRoutes } from "./api/user/user.routes";
 // app.use("/api/user", userRoutes);
 
-// import { trainingRoutes } from "./api/training/training.routes";
-// app.use("/api/training", trainingRoutes);
 
 // import { exerciseRoutes } from "./api/exercise/exercise.routes";
 // app.use("/api/exercise", exerciseRoutes);
@@ -53,8 +57,6 @@ app.use("/api/trainee", traineeRoutes);
 // import { videoRoutes } from "./api/video/video.routes";
 // app.use("/api/video", videoRoutes);
 
-// import { programRoutes } from "./api/program/program.routes";
-// app.use("/api/program", programRoutes);
 
 // Catch-all route
 app.get("/**", (req: Request, res: Response) => {

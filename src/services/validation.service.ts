@@ -4,8 +4,8 @@
  * @returns A string with an error message if the title is invalid, otherwise null.
  */
 const validateStrLength = (
-  length: number,
   filedName: string,
+  length: number,
   str?: string
 ): string | null => {
   if (!str || str.trim().length < length) {
@@ -15,9 +15,9 @@ const validateStrLength = (
 };
 
 const validateArrayLength = (
+  filedName: string,
   arr: unknown[],
-  length: number,
-  filedName: string
+  length: number
 ): string | null => {
   if (arr.length < length) {
     return `At least ${length} ${filedName} is required.`;
@@ -25,8 +25,11 @@ const validateArrayLength = (
   return null;
 };
 
-const validateExistence = (item: unknown, filedName: string): string | null => {
-  if (!item) {
+const validateExistence = (
+  filedName: string,
+  value: unknown
+): string | null => {
+  if (!value) {
     return `${filedName} is required.`;
   }
   return null;
@@ -57,13 +60,33 @@ const validateLetters = (filedName: string, value?: string): string | null => {
 
 const validateNumbers = (
   filedName: string,
-  value?: string | number|null
+  value?: string | number | null
 ): string | null => {
   if (!value) {
     return `${filedName} is required.`;
   }
   if (!/^[0-9]+$/.test(value.toString())) {
     return `${filedName} contain only numbers.`;
+  }
+  return null;
+};
+
+const validateDate = (filedName: string, value?: Date): string | null => {
+  if (!value) {
+    return `${filedName} is required.`;
+  }
+  if (isNaN(value.getTime())) {
+    return `${filedName} is invalid.`;
+  }
+  return null;
+};
+
+const validateDateStr = (filedName: string, value?: string): string | null => {
+  if (!value) {
+    return `${filedName} is required.`;
+  }
+  if (isNaN(Date.parse(value))) {
+    return `${filedName} is invalid.`;
   }
   return null;
 };
@@ -75,4 +98,6 @@ export const validationService = {
   validateLettersAndNumbers,
   validateLetters,
   validateNumbers,
+  validateDate,
+  validateDateStr,
 };

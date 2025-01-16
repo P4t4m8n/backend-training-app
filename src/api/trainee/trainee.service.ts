@@ -30,7 +30,7 @@ const TRAINEE_SMALL_SELECT = {
 
 const TRAINEE_FULL_SELECT = {
   id: true,
-  programs: true,
+  programs: {},
   trainings: true,
   trainer: {
     select: {
@@ -113,7 +113,6 @@ async function get(id: string): Promise<TTrainee> {
     },
     select: { ...TRAINEE_FULL_SELECT },
   });
-  console.log("trainee:", trainee);
 
   return trainee as unknown as TTrainee;
 }

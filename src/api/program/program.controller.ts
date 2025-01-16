@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { programService } from "./program.service";
 import { AppError } from "../../services/Error.service";
+import { validateProgramCreateDto } from "./program.validation";
+import { sanitizeProgramCreateDto } from "./program.sanitization";
 
 export async function getPrograms(req: Request, res: Response) {
   try {
@@ -26,10 +28,19 @@ export async function getProgramById(req: Request, res: Response) {
 
 export async function createProgram(req: Request, res: Response) {
   try {
-    const programDto = req.body;
+    const data = req.body;
+
+    const errors = validateProgramCreateDto(data);
+    if (errors.length > 0) {
+      throw AppError.create(errors.join(", "), 400);
+    }
+    data.startDate = new Date(data.startDate!);
+    data.endDate = new Date(data?.endDate!);
+
+    const programDto = sanitizeProgramCreateDto(data);
     console.dir(programDto, { depth: null });
-    const program = await programService.create(programDto);
-    res.json(programDto);
+    const id = await programService.create(programDto);
+    res.status(201).json(id);
   } catch (error) {
     const err = AppError.create(error as string, 500);
     res.status(err.statusCode).json(err);
